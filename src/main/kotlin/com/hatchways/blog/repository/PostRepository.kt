@@ -13,5 +13,5 @@ interface PostRepository : JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p JOIN p.users user WHERE user.id = :userId")
     fun findAllByUserId(userId: Long): List<Post>
 
-    fun findByUsersIdIn(userIds: List<Long>, sort: Sort): List<Post>
+    fun findDistinctByUsersIdIn(userIds: List<Long>, sort: Sort): List<Post>
 }

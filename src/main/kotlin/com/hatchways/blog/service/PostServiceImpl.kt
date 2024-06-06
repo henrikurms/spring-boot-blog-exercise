@@ -31,6 +31,6 @@ class PostServiceImpl(
 
     override fun findAllByUserIds(userIds: List<Long>, sortBy: PostSortBy, direction: Direction): List<Post> {
         val sortDirection = Sort.Direction.fromString(direction.name)
-        return postRepository.findByUsersIdIn(userIds, Sort.by(sortDirection, sortBy.name))
+        return postRepository.findDistinctByUsersIdIn(userIds, Sort.by(sortDirection, sortBy.name))
     }
 }
