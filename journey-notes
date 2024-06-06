@@ -1,0 +1,27 @@
+Had intellij issues
+
+Defining endpoint with the correct parameters was easy
+
+But modelMapper sometimes set tags to null
+
+Had not user modelMapper so tried to get that to work
+configuring modelMapper for post did not work because it's a closed class
+opening the Post class broke jpa, Had not used jpa so tried to get that to work
+Had not used spring injection so tried to get that to work with mapstruct
+
+found out I had to add annotation processor in gradle, that was new
+found out I had to use kapt or ksp
+found out ksp does not work woth mapstruct
+made mapstruct work with kapt
+
+in the end had to rename the field in PostResponse
+
+after the rename modelMapper also works
+
+I noticed validation stuff return status code 500
+Then I noticed we are using an old version of spring
+
+Tried to upgrade everything, had to upgrade configuration
+Tried to upgrade hibernate v6, but everything broke
+
+Found out putting request params in a class made spring use status code 400 instead
