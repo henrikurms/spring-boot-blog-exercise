@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -26,6 +26,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver
 import org.springframework.security.oauth2.server.resource.web.HeaderBearerTokenResolver
+import org.springframework.security.web.SecurityFilterChain
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 
@@ -33,8 +34,8 @@ import java.security.interfaces.RSAPublicKey
 @EnableWebSecurity
 class SecurityConfig(
     private val userService: UserService,
-    private val authenticationEntryPoint: JwtAuthenticationEntryPoint
-) : WebSecurityConfigurerAdapter() {
+    private val unauthorizedHandler: JwtAuthenticationEntryPoint
+) {
 
     @Value("\${blog.security.public-key}")
     lateinit var rsaPublicKey: RSAPublicKey
@@ -52,27 +53,27 @@ class SecurityConfig(
         const val AUTHENTICATION_HEADER = "x-access-token"
     }
 
-    override fun configure(auth: AuthenticationManagerBuilder) {
-      auth.userDetailsService(userService).passwordEncoder(passwordEncoder())
-    }
-
-    override fun configure(http: HttpSecurity) {
-        http.cors().and().csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeRequests()
-            .antMatchers("/api/login").permitAll()
-            .antMatchers("/api/register").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .oauth2ResourceServer()
-            .jwt()
-            .and()
-            .authenticationEntryPoint(authenticationEntryPoint)
+    @Bean
+    fun configure(http: HttpSecurity): SecurityFilterChain {
+        http {
+            cors { disable() }
+            csrf { disable() }
+            sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+            authorizeRequests {
+                authorize("/api/login", permitAll)
+                authorize("/api/register", permitAll)
+                authorize(anyRequest, authenticated)
+            }
+            oauth2ResourceServer { jwt {} }
+            exceptionHandling { authenticationEntryPoint = unauthorizedHandler }
+        }
+        return http.build()
     }
 
     @Bean
-    override fun authenticationManagerBean(): AuthenticationManager {
-        return super.authenticationManagerBean()
+    fun authenticationManagerBean(config: AuthenticationConfiguration): AuthenticationManager {
+        // The userDetailsService and passwordEncoder are automatically picked up and used if we add this
+        return config.authenticationManager
     }
 
     @Bean

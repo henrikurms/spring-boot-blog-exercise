@@ -1,7 +1,5 @@
 package com.hatchways.blog.controller
 
-import javax.validation.Valid
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -16,6 +14,7 @@ import com.hatchways.blog.schema.AuthRequest
 import com.hatchways.blog.schema.AuthResponse
 import com.hatchways.blog.service.UserService
 import com.hatchways.blog.util.AuthUtil
+import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("/api")

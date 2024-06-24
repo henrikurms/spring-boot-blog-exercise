@@ -1,6 +1,5 @@
 package com.hatchways.blog.config
 
-import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,10 +20,5 @@ class DbConfig {
         setDriverClassName("org.sqlite.JDBC")
         url = dbUrl
       }
-    }
-
-    @Bean
-    fun modelMapper(): ModelMapper {
-        return ModelMapper()
     }
 }

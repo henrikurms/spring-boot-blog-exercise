@@ -1,6 +1,6 @@
 package com.hatchways.blog.model
 
-import javax.persistence.*
+import jakarta.persistence.*
 import kotlin.collections.Set
 
 @Entity
@@ -48,11 +48,12 @@ class Post(
         this.popularity = popularity
     }
 
-    fun getTags(): Array<String> {
-        return tags?.split(",")?.toTypedArray() ?: emptyArray()
+    // Had to rename this so the mapping could be instructed to use this instead of the tags field
+    fun getTagsList(): List<String> {
+        return tags?.split(",") ?: emptyList()
     }
 
-    fun setTags(tags: Array<String>) {
+    fun setTagsList(tags: List<String>) {
         this.tags = tags.joinToString(",")
     }
 }
